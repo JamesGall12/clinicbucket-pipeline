@@ -60,22 +60,18 @@
     font-size: 14px;
   }
 
-  /* Layout */
   .shell { max-width: 900px; margin: 0 auto; padding: 2rem 1.5rem 4rem; }
 
-  /* Header */
   .header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 2rem; flex-wrap: wrap; gap: 12px; }
   .logo { font-family: 'IBM Plex Mono', monospace; font-size: 13px; font-weight: 500; letter-spacing: -0.01em; }
   .logo span { color: var(--green); }
   .header-right { display: flex; align-items: center; gap: 10px; }
 
-  /* Stats */
   .stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 1.5rem; }
   .stat-card { background: var(--surface); border: 0.5px solid var(--border); border-radius: 10px; padding: 14px 16px; }
   .stat-n { font-family: 'IBM Plex Mono', monospace; font-size: 24px; font-weight: 500; color: var(--text); line-height: 1; }
   .stat-l { font-size: 11px; color: var(--text2); margin-top: 4px; text-transform: uppercase; letter-spacing: 0.05em; }
 
-  /* Controls */
   .controls { display: flex; gap: 8px; margin-bottom: 1rem; flex-wrap: wrap; }
   .controls input, .controls select {
     font-family: 'IBM Plex Sans', sans-serif;
@@ -91,7 +87,6 @@
   .controls input { flex: 1; min-width: 200px; }
   .controls input:focus, .controls select:focus { border-color: var(--green); }
 
-  /* Buttons */
   .btn {
     font-family: 'IBM Plex Sans', sans-serif;
     font-size: 13px;
@@ -110,7 +105,6 @@
   .btn-primary:hover { background: var(--green-dark); border-color: var(--green-dark); }
   .btn-sm { font-size: 11px; padding: 5px 10px; }
 
-  /* Add form */
   .add-form {
     background: var(--surface);
     border: 0.5px solid var(--green);
@@ -138,7 +132,6 @@
   .field input:focus, .field select:focus, .field textarea:focus { border-color: var(--green); }
   .form-actions { display: flex; gap: 8px; justify-content: flex-end; margin-top: 4px; }
 
-  /* Cards */
   .prospect-list { display: flex; flex-direction: column; gap: 6px; }
   .card {
     background: var(--surface);
@@ -157,7 +150,6 @@
   .card-contact { font-size: 12px; color: var(--text2); margin-top: 2px; }
   .card-right { display: flex; flex-direction: column; align-items: flex-end; gap: 5px; flex-shrink: 0; }
 
-  /* Badges */
   .badge { font-size: 10px; font-weight: 500; padding: 3px 9px; border-radius: 99px; letter-spacing: 0.02em; white-space: nowrap; }
   .b-sequence { background: var(--blue-light); color: var(--blue-text); }
   .b-positive { background: var(--green-light); color: var(--green-text); }
@@ -172,7 +164,6 @@
   .card-next { font-size: 12px; color: var(--text2); margin-top: 8px; padding-top: 8px; border-top: 0.5px solid var(--border); line-height: 1.4; }
   .card-next strong { color: var(--text); font-weight: 500; }
 
-  /* Expanded */
   .expanded-body { display: none; margin-top: 12px; padding-top: 12px; border-top: 0.5px solid var(--border); }
   .card.expanded .expanded-body { display: block; }
   .detail-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px 16px; margin-bottom: 12px; }
@@ -232,7 +223,6 @@
 
   .empty-state { text-align: center; padding: 3rem 1rem; color: var(--text2); font-size: 13px; }
 
-  /* Section dividers in list */
   .section-divider { font-family: 'IBM Plex Mono', monospace; font-size: 10px; color: var(--text3); text-transform: uppercase; letter-spacing: 0.08em; padding: 0.5rem 0 0.25rem; margin-top: 0.5rem; border-top: 0.5px solid var(--border); }
 
   @media (max-width: 600px) {
@@ -312,51 +302,475 @@
 
 <script>
 const SEED = [
-  {company:"Medical Rehabilitation",contact:"Dr Andrew Bradford",role:"Sole Practitioner",email:"",phone:"03303 410969",linkedin:"https://www.linkedin.com/in/dr-andrew-bradford-68114718/",status:"Replied - Positive",next:"Waiting on reply from email",due:"2026-01-19",notes:"Emailed asking how I am. Replied a normal response. Waiting on response.",touches:3},
-  {company:"Cannabis Clinic Cardiff",contact:"Sam Ashton",role:"CEO & Co-Founder",email:"samashton@cannabiscliniccardiff.co.uk",phone:"44 7450 420 420",linkedin:"https://www.linkedin.com/in/sam-ashton-720a218a/",status:"Replied - Positive",next:"Waiting on reply from email",due:"2026-01-12",notes:"",touches:3},
-  {company:"The Vesey",contact:"Ben Royal",role:"Director",email:"ben.royal@thevesey.co.uk",phone:"44 790 379 1381",linkedin:"https://www.linkedin.com/in/ben-royal-33a263236/",status:"Replied - Positive",next:"Follow up if no reply",due:"2026-02-28",notes:"Retention not the issue — acquisition is. Doesn't like virtual consults. New thread: acquisition / Google Ads angle. Fresh subject line.",touches:3},
-  {company:"Medicann UK",contact:"Gary Whipp",role:"CEO",email:"gary@medicann.co.uk",phone:"44 (0)7999420420",linkedin:"https://www.linkedin.com/in/gary-whipp-4774541a/",status:"Meeting Booked",next:"Discovery call",due:"2026-01-20",notes:"Gary emailed asking for a prop Jan 12. Sent and no reply since.",touches:4},
-  {company:"Airmed (SHCC)",contact:"Pat Fegan",role:"CEO",email:"pat@shcc.co.uk",phone:"44 779 884 1234",linkedin:"https://www.linkedin.com/in/patfegan/",status:"Meeting Booked",next:"If no reply, move to nurture",due:"2026-02-28",notes:"Meeting proposed Jan 21. Pat didn't show. No reply on WhatsApp or phone since.",touches:3},
-  {company:"Dispensed",contact:"Tim Crow",role:"Head of Operations & People",email:"tim@dispensed.com.au",phone:"020 3892 1903",linkedin:"https://www.linkedin.com/in/tim-crow/",status:"In Sequence",next:"",due:"2026-01-19",notes:"",touches:2},
-  {company:"IPS Pharma / Integro",contact:"Neil Smith",role:"CEO",email:"neil.smith@avextra.com",phone:"0800 464 7051",linkedin:"https://www.linkedin.com/in/neil-smith-a4764371/",status:"In Sequence",next:"",due:"2026-01-12",notes:"",touches:2},
-  {company:"Chelsea Pharmacy Medical",contact:"Bhavin Patel",role:"CEO",email:"b.patel@cpmedicalclinic.com",phone:"020 7838 6180",linkedin:"https://www.linkedin.com/in/bhavin-patel-86b59825/",status:"In Sequence",next:"",due:"2026-01-19",notes:"",touches:3},
-  {company:"Anna Medicinals",contact:"Nick Pateras",role:"Head of Operations",email:"Nick.Pateras@annamedicinals",phone:"01727 647979",linkedin:"",status:"In Sequence",next:"",due:"2026-01-19",notes:"",touches:2},
-  {company:"Nottingham Road Clinic",contact:"Grant Roberts",role:"CEO",email:"grant.roberts@managedhealthcareservices.co.uk",phone:"01623 624137",linkedin:"https://www.linkedin.com/in/grant-roberts-41a28b1/",status:"In Sequence",next:"Follow up if no reply",due:"2026-02-28",notes:"New thread: 6-month renewal retention question.",touches:3},
-  {company:"Ghosh Medical",contact:"Arun Ghosh",role:"CEO",email:"arun@ghoshmedicalgroup.com",phone:"0333 200 3335",linkedin:"https://www.linkedin.com/in/arun-ghosh-69340923/",status:"In Sequence",next:"",due:"2026-01-19",notes:"",touches:3},
-  {company:"London Orthopaedic Clinic",contact:"Cristina Emberton",role:"COO",email:"cristina.emberton@londonorthopaedic.com",phone:"020 7186 1000",linkedin:"https://www.linkedin.com/in/cristina-emberton-78699ab6/",status:"In Sequence",next:"",due:"2026-01-19",notes:"",touches:3},
-  {company:"Maruleaf",contact:"Zachariah Edwards",role:"Director",email:"info@maruleafclinic.co.uk",phone:"07469 017192",linkedin:"https://www.linkedin.com/in/zachariah-edwards-b5a594364/",status:"In Sequence",next:"",due:"2026-01-19",notes:"",touches:3},
-  {company:"Zoto",contact:"Dean Gainsley",role:"Clinical Lead",email:"dgainsley@britannia.com",phone:"0207 101 8424",linkedin:"https://www.linkedin.com/in/deangainsley/",status:"In Sequence",next:"",due:"2026-01-12",notes:"Previously reached out to Dr Arun, now chasing Dean.",touches:1},
-  {company:"Marucanna",contact:"Mohammed Israr",role:"Owner",email:"",phone:"0121 537 2393",linkedin:"https://www.linkedin.com/in/mohammed-israr-4aba57200/",status:"In Sequence",next:"",due:"2026-01-19",notes:"",touches:3},
-  {company:"CB1 Medical",contact:"Anabel Sharma",role:"COO",email:"anabel@cb1medical.com",phone:"0116 273 1233",linkedin:"https://www.linkedin.com/in/anabel-sharma/",status:"In Sequence",next:"Follow up if no reply",due:"2026-02-28",notes:"New thread: referenced Medistack launch + plans to double patients in 2026.",touches:3},
-  {company:"Mamedica",contact:"Lia Reid",role:"Head of Clinic Operations",email:"lia@mamedica.com",phone:"0330 580 1170",linkedin:"https://www.linkedin.com/in/lia-reid-48a020222/",status:"In Sequence",next:"Follow up if no reply",due:"2026-02-28",notes:"New thread: referenced Casa Verde £4.5m investment + scaling.",touches:3},
-  {company:"Lyphe",contact:"Karen Sharp",role:"MD",email:"karen@lyphe.com",phone:"0204 538 2273",linkedin:"",status:"In Sequence",next:"",due:"2026-01-19",notes:"Email did not send for Nick.",touches:4},
-  {company:"Welford Clinic",contact:"Joshua Roberts",role:"CBO",email:"joshuaboydroberts@gmail.com",phone:"0203 376 6661",linkedin:"https://www.linkedin.com/in/joshua-roberts-24a71123/",status:"In Sequence",next:"",due:"2026-01-19",notes:"",touches:4},
-  {company:"Jorja Emerson Centre",contact:"Robin Emerson",role:"Founder",email:"robin.emerson001@gmail.com",phone:"0333 050 5088",linkedin:"https://www.linkedin.com/in/robin-emerson-56181761/",status:"In Sequence",next:"",due:"2026-01-19",notes:"",touches:4},
-  {company:"Phoenix Mental Health",contact:"Martine Stoffels",role:"Director",email:"martine.stoffels@phoenix-mhs.com",phone:"0370 162 0673",linkedin:"https://www.linkedin.com/in/dr-martine-stoffels-04839520/",status:"In Sequence",next:"",due:"2026-01-19",notes:"",touches:3},
-  {company:"Elios Clinics",contact:"Harmeet Singh Bharaj",role:"Director",email:"hsb@thearmourgroup.com",phone:"0121 405 1696",linkedin:"https://www.linkedin.com/in/harmeet-singh-bharaj/",status:"In Sequence",next:"Follow up if no reply",due:"2026-02-28",notes:"Re-engagement: free consult model retention economics. New thread: multi-service clinic, 28-day prescription cycle.",touches:4},
-  {company:"Medisonal Clinic",contact:"Hana Thalova Salussolia",role:"CEO",email:"hana@medisonalclinic.com",phone:"020 8016 3990",linkedin:"https://www.linkedin.com/in/hana-thalova-salussolia-ab0833b/",status:"In Sequence",next:"",due:"2026-01-19",notes:"",touches:4},
-  {company:"The Plug Medical Group",contact:"James Short",role:"Owner",email:"james@celadonpharma.co.uk",phone:"0207 096 5660",linkedin:"https://www.linkedin.com/in/james-short-809778211/",status:"In Sequence",next:"Follow up if no reply",due:"2026-02-28",notes:"Took Celadon private Aug 2025. Free consult model. New thread: Celadon pharmacy angle.",touches:3},
-  {company:"Borders Pain Clinic",contact:"Rob Forbes",role:"Founder",email:"info@borderspainclinic.co.uk",phone:"",linkedin:"https://www.linkedin.com/in/rob-forbes-72b30373/",status:"In Sequence",next:"Circle back mid-Feb",due:"2026-02-15",notes:"Lead with The Plug unit economics — free consults attract low-value patients, retention is how he flips it to margin.",touches:3},
-  {company:"London Cannabis Clinic",contact:"Mark Ali",role:"CEO & Medical Director",email:"mark@privateharleystreetclinic.com",phone:"020 7118 0250",linkedin:"https://www.linkedin.com/in/dr-mark-ali-harleystreetclinic/",status:"In Sequence",next:"",due:"2026-01-20",notes:"Head of umbrella org, might delegate down.",touches:2},
-  {company:"Cantourage UK",contact:"Josh Casson",role:"Operations Director",email:"josh@cantourageclinic.com",phone:"",linkedin:"https://www.linkedin.com/in/jpwcasson/",status:"Closed Lost",next:"",due:"",notes:"Not ICP, leave for now.",touches:2},
-  {company:"Resilience Medicine",contact:"Dr Dani Gordon",role:"Founder",email:"dani@resiliencemedicine.co.uk",phone:"",linkedin:"https://www.linkedin.com/in/drdanigordon/",status:"Closed Lost",next:"",due:"",notes:"Not ICP, leave for now.",touches:0},
-  {company:"MyAccess Clinics",contact:"Christopher Strauch",role:"CEO",email:"chris@montu.com.au",phone:"",linkedin:"https://www.linkedin.com/in/christopherstrauch/",status:"Closed Lost",next:"",due:"",notes:"Acquired by Montu. Do not contact.",touches:0},
-  {company:"LVL Health",contact:"Tony Samios",role:"CEO",email:"",phone:"",linkedin:"https://www.linkedin.com/in/tony-samios-92397011/",status:"Closed Lost",next:"",due:"",notes:"DNC.",touches:0},
-  {company:"Treat-It Clinic",contact:"Bede Ronzani",role:"CFO",email:"bede@easykind.com.au",phone:"",linkedin:"https://www.linkedin.com/in/bederonzani/",status:"Closed Lost",next:"",due:"",notes:"Acquired by EasyKind.",touches:0},
-  {company:"Leva / Zerenia / Khiron",contact:"Eric Bystrom",role:"CEO",email:"eric@levaclinic.com",phone:"",linkedin:"https://linkedin.com/in/eric-bystrom-0a3831",status:"Closed Lost",next:"Set Google Alert, revisit if recapitalized",due:"",notes:"IASO Ltd entered administration Oct 2024. Khiron parent micro-cap. High payment risk. If Bystrom moves to stable company, follow him.",touches:3},
-  {company:"Montu",contact:"Angus O'Connell",role:"Head of B2C Marketing",email:"angus.o@montu.com.au",phone:"",linkedin:"",status:"Closed Lost",next:"Reach out to Angus for warm intro to Veronica",due:"",notes:"30-min meeting. Angus said he'd connect to Veronica who heads UK marketing for Montu.",touches:1},
-  {company:"Via Clinic",contact:"Eileen Feeney",role:"CEO",email:"eileen.feeney@viaclinic.co.uk",phone:"",linkedin:"https://www.linkedin.com/in/eileen-feeney-6060716/",status:"Closed Lost",next:"",due:"",notes:"Only prescribes to certain patients. Not a cannabis clinic.",touches:3},
+  // ── REPLIED POSITIVE ──────────────────────────────────────────────────────
+  {
+    company:"Medical Rehabilitation",
+    contact:"Dr Andrew Bradford",
+    role:"Sole Practitioner",
+    email:"",
+    phone:"03303 410969",
+    linkedin:"https://www.linkedin.com/in/dr-andrew-bradford-68114718/",
+    status:"Replied - Positive",
+    next:"Follow up if no reply",
+    due:"2026-03-20",
+    notes:"Emailed asking how I am. Replied a normal response. New email sent 16 Mar 2026 (new thread). Waiting on response.",
+    touches:4
+  },
+  {
+    company:"Cannabis Clinic Cardiff",
+    contact:"Sam Ashton",
+    role:"CEO & Co-Founder",
+    email:"samashton@cannabiscliniccardiff.co.uk",
+    phone:"44 7450 420 420",
+    linkedin:"https://www.linkedin.com/in/sam-ashton-720a218a/",
+    status:"Replied - Positive",
+    next:"Follow up if no reply",
+    due:"2026-03-20",
+    notes:"Called out patients are 'grasshoppers' — retention is clearly a pain point. Warm. Emailed 5 Jan, 12 Jan. New thread email 16 Mar 2026.",
+    touches:5
+  },
+  {
+    company:"The Vesey",
+    contact:"Ben Royal",
+    role:"Director",
+    email:"ben.royal@thevesey.co.uk",
+    phone:"44 790 379 1381",
+    linkedin:"https://www.linkedin.com/in/ben-royal-33a263236/",
+    status:"Replied - Positive",
+    next:"Follow up if no reply",
+    due:"2026-03-20",
+    notes:"Retention not the issue — acquisition is. Interested in Google Ads angle. Emails: 5 Jan, 25 Feb. New thread email 16 Mar 2026.",
+    touches:5
+  },
+
+  // ── IN SEQUENCE ───────────────────────────────────────────────────────────
+  {
+    company:"Ghosh Medical",
+    contact:"Arun Ghosh",
+    role:"CEO",
+    email:"arun@ghoshmedicalgroup.com",
+    phone:"0333 200 3335",
+    linkedin:"https://www.linkedin.com/in/arun-ghosh-69340923/",
+    status:"In Sequence",
+    next:"Follow up if no reply",
+    due:"2026-03-20",
+    notes:"Emails: 5 Jan, 26 Feb (new thread), 16 Mar 2026 (new thread).",
+    touches:4
+  },
+  {
+    company:"Chelsea Pharmacy Medical",
+    contact:"Bhavin Patel",
+    role:"CEO",
+    email:"b.patel@cpmedicalclinic.com",
+    phone:"020 7838 6180",
+    linkedin:"https://www.linkedin.com/in/bhavin-patel-86b59825/",
+    status:"In Sequence",
+    next:"Follow up if no reply",
+    due:"2026-03-20",
+    notes:"Emails: 5 Jan, 26 Feb (new thread), 16 Mar 2026 (new thread).",
+    touches:4
+  },
+  {
+    company:"London Cannabis Clinic",
+    contact:"Mark Ali",
+    role:"CEO & Medical Director",
+    email:"mark@privateharleystreetclinic.com",
+    phone:"020 7118 0250",
+    linkedin:"https://www.linkedin.com/in/dr-mark-ali-harleystreetclinic/",
+    status:"In Sequence",
+    next:"Follow up if no reply",
+    due:"2026-03-20",
+    notes:"Head of umbrella org, might delegate down. Emails: 5 Jan, 26 Feb (new thread), 16 Mar 2026 (new thread).",
+    touches:4
+  },
+  {
+    company:"Medisonal Clinic",
+    contact:"Hana Thalova Salussolia",
+    role:"CEO",
+    email:"hana@medisonalclinic.com",
+    phone:"020 8016 3990",
+    linkedin:"https://www.linkedin.com/in/hana-thalova-salussolia-ab0833b/",
+    status:"In Sequence",
+    next:"Follow up if no reply",
+    due:"2026-03-20",
+    notes:"Emails: 5 Jan, 12 Jan, 26 Feb (new thread), 16 Mar 2026 (new thread).",
+    touches:5
+  },
+  {
+    company:"Phoenix Mental Health",
+    contact:"Martine Stoffels",
+    role:"Director",
+    email:"martine.stoffels@phoenix-mhs.com",
+    phone:"0370 162 0673",
+    linkedin:"https://www.linkedin.com/in/dr-martine-stoffels-04839520/",
+    status:"In Sequence",
+    next:"Follow up if no reply",
+    due:"2026-03-20",
+    notes:"Emails: 5 Jan, 26 Feb (new thread), 16 Mar 2026 (new thread).",
+    touches:4
+  },
+  {
+    company:"Welford Clinic",
+    contact:"Joshua Roberts",
+    role:"CBO",
+    email:"joshuaboydroberts@gmail.com",
+    phone:"0203 376 6661",
+    linkedin:"https://www.linkedin.com/in/joshua-roberts-24a71123/",
+    status:"In Sequence",
+    next:"Follow up if no reply",
+    due:"2026-03-20",
+    notes:"Emails: 5 Jan, 12 Jan, 26 Feb (new thread), 16 Mar 2026 (new thread).",
+    touches:5
+  },
+  {
+    company:"Jorja Emerson Centre",
+    contact:"Robin Emerson",
+    role:"Founder",
+    email:"robin.emerson001@gmail.com",
+    phone:"0333 050 5088",
+    linkedin:"https://www.linkedin.com/in/robin-emerson-56181761/",
+    status:"In Sequence",
+    next:"Follow up if no reply",
+    due:"2026-03-20",
+    notes:"Emails: 5 Jan, 12 Jan, 26 Feb (new thread), 16 Mar 2026 (new thread).",
+    touches:5
+  },
+  {
+    company:"Borders Pain Clinic",
+    contact:"Rob Forbes",
+    role:"Founder",
+    email:"info@borderspainclinic.co.uk",
+    phone:"",
+    linkedin:"https://www.linkedin.com/in/rob-forbes-72b30373/",
+    status:"In Sequence",
+    next:"Follow up if no reply",
+    due:"2026-03-20",
+    notes:"Lead with free consult unit economics — free consults attract low-value patients, retention is how he flips it to margin. Emails: 5 Jan, 26 Feb (new thread), 16 Mar 2026 (new thread).",
+    touches:4
+  },
+  {
+    company:"Marucanna",
+    contact:"Mohammed Israr",
+    role:"Owner",
+    email:"info@marucanna.co.uk",
+    phone:"0121 537 2393",
+    linkedin:"https://www.linkedin.com/in/mohammed-israr-4aba57200/",
+    status:"In Sequence",
+    next:"Follow up if no reply",
+    due:"2026-03-20",
+    notes:"Sending to info@ general inbox. Emails: 5 Jan, 12 Jan, 26 Feb (new thread), 16 Mar 2026 (new thread).",
+    touches:5
+  },
+  {
+    company:"Anna Medicinals",
+    contact:"Nick Pateras",
+    role:"Head of Operations",
+    email:"Nick.Pateras@annamedicinals.com",
+    phone:"01727 647979",
+    linkedin:"",
+    status:"In Sequence",
+    next:"Follow up if no reply",
+    due:"2026-03-20",
+    notes:"Hayley Thompson left Jan 2026. Auto-reply from Karen Sharp redirected operational queries to Nick Pateras. Nick is the correct ops decision-maker. New thread email 16 Mar 2026.",
+    touches:3
+  },
+  {
+    company:"Nottingham Road Clinic",
+    contact:"Grant Roberts",
+    role:"CEO",
+    email:"grant.roberts@managedhealthcareservices.co.uk",
+    phone:"01623 624137",
+    linkedin:"https://www.linkedin.com/in/grant-roberts-41a28b1/",
+    status:"In Sequence",
+    next:"Follow up if no reply",
+    due:"2026-03-20",
+    notes:"New thread: 6-month renewal retention question. Emails: 5 Jan, 12 Jan, 25 Feb, 16 Mar 2026 (new thread).",
+    touches:5
+  },
+  {
+    company:"CB1 Medical",
+    contact:"Anabel Sharma",
+    role:"COO",
+    email:"anabel@cb1medical.com",
+    phone:"0116 273 1233",
+    linkedin:"https://www.linkedin.com/in/anabel-sharma/",
+    status:"In Sequence",
+    next:"Follow up if no reply",
+    due:"2026-03-20",
+    notes:"New thread: referenced Medistack launch + plans to double patients in 2026. Emails: 5 Jan, 12 Jan, 25 Feb, 16 Mar (short follow-up).",
+    touches:5
+  },
+  {
+    company:"Mamedica",
+    contact:"Lia Reid",
+    role:"Head of Clinic Operations",
+    email:"lia@mamedica.com",
+    phone:"0330 580 1170",
+    linkedin:"https://www.linkedin.com/in/lia-reid-48a020222/",
+    status:"In Sequence",
+    next:"Follow up if no reply",
+    due:"2026-03-20",
+    notes:"New thread: referenced Casa Verde £4.5m investment + scaling. Emails: 5 Jan, 25 Feb, 16 Mar 2026 (full fresh email).",
+    touches:4
+  },
+  {
+    company:"Elios Clinics",
+    contact:"Harmeet Singh Bharaj",
+    role:"Director",
+    email:"hsb@thearmourgroup.com",
+    phone:"0121 405 1696",
+    linkedin:"https://www.linkedin.com/in/harmeet-singh-bharaj/",
+    status:"In Sequence",
+    next:"Follow up if no reply",
+    due:"2026-03-20",
+    notes:"Multi-service clinic, 28-day prescription cycle. Free consult model retention economics. Emails: 5 Jan, 12 Jan, 25 Feb, 16 Mar (short follow-up).",
+    touches:5
+  },
+  {
+    company:"The Plug Medical Group",
+    contact:"James Short",
+    role:"Owner",
+    email:"james@celadonpharma.co.uk",
+    phone:"0207 096 5660",
+    linkedin:"https://www.linkedin.com/in/james-short-809778211/",
+    status:"In Sequence",
+    next:"Follow up if no reply",
+    due:"2026-03-20",
+    notes:"Took Celadon private Aug 2025. Free consult model. Celadon pharmacy angle. Emails: 5 Jan, 12 Jan, 25 Feb, 16 Mar (new thread).",
+    touches:5
+  },
+  // ── CLOSED LOST ───────────────────────────────────────────────────────────
+  {
+    company:"Medicann UK",
+    contact:"Gary Whipp",
+    role:"CEO",
+    email:"gary@medicann.co.uk",
+    phone:"44 (0)7999420420",
+    linkedin:"https://www.linkedin.com/in/gary-whipp-4774541a/",
+    status:"Closed Lost",
+    next:"Re-engage after Cannabis Europa (May 2026) or 3 months",
+    due:"2026-05-15",
+    notes:"Discovery call Jan 21. Agreed to free audit. Promised intros to Sinead (marketing) and Jack (ops) — never materialised. Gary emailed asking for a prop Jan 12, sent, no reply. Feb 11 reply: 'no bandwidth right now, will keep on file.' Re-engage post Cannabis Europa.",
+    touches:6
+  },
+  {
+    company:"Airmed (SHCC)",
+    contact:"Pat Fegan",
+    role:"CEO",
+    email:"pat@shcc.co.uk",
+    phone:"44 779 884 1234",
+    linkedin:"https://www.linkedin.com/in/patfegan/",
+    status:"Closed Lost",
+    next:"Re-engage after Cannabis Europa (May 2026)",
+    due:"2026-05-15",
+    notes:"Discovery call Jan 21. Agreed to free audit. Promised intro to Chloe at VOR — never materialised. Meeting proposed Jan 21, Pat didn't show. No reply on WhatsApp or phone since. Email sent 25 Feb (new thread). Re-engage post Cannabis Europa.",
+    touches:5
+  },
+  {
+    company:"Cantourage UK",
+    contact:"Josh Casson",
+    role:"Operations Director",
+    email:"josh@cantourageclinic.com",
+    phone:"",
+    linkedin:"https://www.linkedin.com/in/jpwcasson/",
+    status:"Closed Lost",
+    next:"",
+    due:"",
+    notes:"Not ICP, leave for now.",
+    touches:2
+  },
+  {
+    company:"Resilience Medicine",
+    contact:"Dr Dani Gordon",
+    role:"Founder",
+    email:"dani@resiliencemedicine.co.uk",
+    phone:"",
+    linkedin:"https://www.linkedin.com/in/drdanigordon/",
+    status:"Closed Lost",
+    next:"",
+    due:"",
+    notes:"Not ICP, leave for now.",
+    touches:0
+  },
+  {
+    company:"MyAccess Clinics",
+    contact:"Christopher Strauch",
+    role:"CEO",
+    email:"chris@montu.com.au",
+    phone:"",
+    linkedin:"https://www.linkedin.com/in/christopherstrauch/",
+    status:"Closed Lost",
+    next:"",
+    due:"",
+    notes:"Acquired by Montu. Do not contact.",
+    touches:0
+  },
+  {
+    company:"LVL Health",
+    contact:"Tony Samios",
+    role:"CEO",
+    email:"",
+    phone:"",
+    linkedin:"https://www.linkedin.com/in/tony-samios-92397011/",
+    status:"Closed Lost",
+    next:"",
+    due:"",
+    notes:"DNC.",
+    touches:0
+  },
+  {
+    company:"Treat-It Clinic",
+    contact:"Bede Ronzani",
+    role:"CFO",
+    email:"bede@easykind.com.au",
+    phone:"",
+    linkedin:"https://www.linkedin.com/in/bederonzani/",
+    status:"Closed Lost",
+    next:"",
+    due:"",
+    notes:"Acquired by EasyKind.",
+    touches:0
+  },
+  {
+    company:"Leva / Zerenia / Khiron",
+    contact:"Eric Bystrom",
+    role:"CEO",
+    email:"eric@levaclinic.com",
+    phone:"",
+    linkedin:"https://linkedin.com/in/eric-bystrom-0a3831",
+    status:"Closed Lost",
+    next:"Set Google Alert, revisit if recapitalized",
+    due:"",
+    notes:"IASO Ltd entered administration Oct 2024. Khiron parent micro-cap. High payment risk. If Bystrom moves to stable company, follow him.",
+    touches:3
+  },
+  {
+    company:"Montu",
+    contact:"Angus O'Connell",
+    role:"Head of B2C Marketing",
+    email:"angus.o@montu.com.au",
+    phone:"",
+    linkedin:"",
+    status:"Closed Lost",
+    next:"Reach out to Angus for warm intro to Veronica",
+    due:"",
+    notes:"30-min meeting. Angus said he'd connect to Veronica who heads UK marketing for Montu. Intro never materialised.",
+    touches:1
+  },
+  {
+    company:"Via Clinic",
+    contact:"Eileen Feeney",
+    role:"CEO",
+    email:"eileen.feeney@viaclinic.co.uk",
+    phone:"",
+    linkedin:"https://www.linkedin.com/in/eileen-feeney-6060716/",
+    status:"Closed Lost",
+    next:"",
+    due:"",
+    notes:"Only prescribes to certain patients. Not a cannabis clinic. Emailed 5 Jan. DROP.",
+    touches:3
+  },
+  {
+    company:"Dispensed",
+    contact:"Tim Crow",
+    role:"Head of Operations & People",
+    email:"tim@dispensed.com.au",
+    phone:"020 3892 1903",
+    linkedin:"https://www.linkedin.com/in/tim-crow/",
+    status:"Closed Lost",
+    next:"",
+    due:"",
+    notes:"DROP — Australian founder banned from dispensing, regulatory investigation, reputational risk. UK entity is white-label through Plantmed/Urban Clinic.",
+    touches:3
+  },
+  {
+    company:"IPS Pharma / Integro",
+    contact:"Neil Smith",
+    role:"CEO",
+    email:"neil.smith@avextra.com",
+    phone:"0800 464 7051",
+    linkedin:"https://www.linkedin.com/in/neil-smith-a4764371/",
+    status:"Closed Lost",
+    next:"",
+    due:"",
+    notes:"DROP — Too corporate. Neil is CEO of parent Avextra (German-listed). Not ICP.",
+    touches:2
+  },
+  {
+    company:"London Orthopaedic Clinic",
+    contact:"Cristina Emberton",
+    role:"COO",
+    email:"cristina.emberton@londonorthopaedic.com",
+    phone:"020 7186 1000",
+    linkedin:"https://www.linkedin.com/in/cristina-emberton-78699ab6/",
+    status:"Closed Lost",
+    next:"",
+    due:"",
+    notes:"DROP — Orthopaedic clinic, cannabis is a side offering. Not ICP.",
+    touches:3
+  },
+  {
+    company:"Maruleaf",
+    contact:"Zachariah Edwards",
+    role:"Director",
+    email:"info@maruleafclinic.co.uk",
+    phone:"07469 017192",
+    linkedin:"https://www.linkedin.com/in/zachariah-edwards-b5a594364/",
+    status:"Closed Lost",
+    next:"",
+    due:"",
+    notes:"DROP — Duplicate of Marucanna (same Maru- group). Consolidated under Marucanna.",
+    touches:3
+  },
+  {
+    company:"Zoto",
+    contact:"Dean Gainsley",
+    role:"Clinical Lead",
+    email:"dgainsley@britannia.com",
+    phone:"0207 101 8424",
+    linkedin:"https://www.linkedin.com/in/deangainsley/",
+    status:"Closed Lost",
+    next:"",
+    due:"",
+    notes:"PARK — Pain clinic with cannabis as side offering. Wrong contact (clinical lead, not decision-maker). Previously reached out to Dr Arun.",
+    touches:1
+  },
+  {
+    company:"Lyphe",
+    contact:"Karen Sharp",
+    role:"Registered Manager",
+    email:"karen@lyphe.com",
+    phone:"0204 538 2273",
+    linkedin:"",
+    status:"Closed Lost",
+    next:"",
+    due:"",
+    notes:"PARK — Post-administration (Eezy Group acquisition Dec 2023). Karen is registered manager, not commercial decision-maker. Financial distress makes this risky. Note: different Karen Sharp to Anna Medicinals contact.",
+    touches:4
+  },
 ];
 
-let prospects = JSON.parse(localStorage.getItem('cb_prospects') || 'null');
+let prospects = JSON.parse(localStorage.getItem('cb_prospects_v2') || 'null');
 if (!prospects) {
   prospects = SEED.map((p, i) => ({ ...p, id: Date.now() + i }));
   save();
 }
 
+// Deduplicate on load (remove duplicate Ghosh Medical entry if present)
+(function dedup() {
+  const seen = {};
+  prospects = prospects.filter(p => {
+    const key = p.company + '|' + p.contact;
+    if (seen[key]) return false;
+    seen[key] = true;
+    return true;
+  });
+  save();
+})();
+
 let expanded = null;
 
-function save() { localStorage.setItem('cb_prospects', JSON.stringify(prospects)); }
+function save() { localStorage.setItem('cb_prospects_v2', JSON.stringify(prospects)); }
 
 function toggleAdd() {
   const f = document.getElementById('addForm');
@@ -384,8 +798,7 @@ function addProspect() {
   save();
   ['nCompany','nContact','nRole','nEmail','nLinkedIn','nPhone','nNext','nDue','nNotes'].forEach(id => {
     const el = document.getElementById(id);
-    if (el.tagName === 'TEXTAREA' || el.type !== 'date') el.value = '';
-    else el.value = '';
+    el.value = '';
   });
   document.getElementById('addForm').classList.remove('open');
   render();
@@ -537,8 +950,6 @@ function render() {
           ${p.linkedin ? `<div><div class="detail-label">LinkedIn</div><div class="detail-val"><a href="${p.linkedin}" target="_blank">View profile ↗</a></div></div>` : ''}
           ${p.notes ? `<div style="grid-column:1/-1"><div class="detail-label">Notes</div><div class="notes-box" style="margin:0">${p.notes}</div></div>` : ''}
         </div>
-
-        ${p.notes ? `<div class="notes-box">${p.notes}</div>` : ''}
 
         <div class="section-label">Update status</div>
         <div class="inline-controls" onclick="event.stopPropagation()">
