@@ -1,0 +1,563 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ClinicBucket / Pipeline</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  #gate {
+    position: fixed; inset: 0; background: #F7F6F2;
+    display: flex; align-items: center; justify-content: center;
+    z-index: 9999; font-family: 'IBM Plex Sans', sans-serif;
+  }
+  #gate-box { text-align: center; }
+  #gate-box p { font-family: 'IBM Plex Mono', monospace; font-size: 13px; color: #1a1a18; margin-bottom: 12px; }
+  #gate-box input {
+    font-family: 'IBM Plex Sans', sans-serif; font-size: 14px;
+    border: 0.5px solid rgba(0,0,0,0.2); border-radius: 8px;
+    padding: 9px 14px; outline: none; background: #fff;
+    display: block; width: 220px; margin: 0 auto 8px; text-align: center;
+  }
+  #gate-box input:focus { border-color: #1D9E75; }
+  #gate-box button {
+    font-family: 'IBM Plex Sans', sans-serif; font-size: 13px; font-weight: 500;
+    background: #1D9E75; color: #fff; border: none; border-radius: 8px;
+    padding: 9px 24px; cursor: pointer; width: 220px;
+  }
+  #gate-box .err { font-size: 12px; color: #A32D2D; margin-top: 6px; display: none; }
+  :root {
+    --green: #1D9E75;
+    --green-dark: #0F6E56;
+    --green-light: #E1F5EE;
+    --green-text: #085041;
+    --amber-light: #FAEEDA;
+    --amber-text: #854F0B;
+    --blue-light: #E6F1FB;
+    --blue-text: #185FA5;
+    --purple-light: #EEEDFE;
+    --purple-text: #3C3489;
+    --red-light: #FCEBEB;
+    --red-text: #A32D2D;
+    --gray-light: #F1EFE8;
+    --gray-text: #5F5E5A;
+    --border: rgba(0,0,0,0.1);
+    --border-strong: rgba(0,0,0,0.2);
+    --bg: #F7F6F2;
+    --surface: #FFFFFF;
+    --surface2: #F1EFE8;
+    --text: #1a1a18;
+    --text2: #6b6b67;
+    --text3: #9a9a95;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'IBM Plex Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    font-size: 14px;
+  }
+
+  /* Layout */
+  .shell { max-width: 900px; margin: 0 auto; padding: 2rem 1.5rem 4rem; }
+
+  /* Header */
+  .header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 2rem; flex-wrap: wrap; gap: 12px; }
+  .logo { font-family: 'IBM Plex Mono', monospace; font-size: 13px; font-weight: 500; letter-spacing: -0.01em; }
+  .logo span { color: var(--green); }
+  .header-right { display: flex; align-items: center; gap: 10px; }
+
+  /* Stats */
+  .stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 1.5rem; }
+  .stat-card { background: var(--surface); border: 0.5px solid var(--border); border-radius: 10px; padding: 14px 16px; }
+  .stat-n { font-family: 'IBM Plex Mono', monospace; font-size: 24px; font-weight: 500; color: var(--text); line-height: 1; }
+  .stat-l { font-size: 11px; color: var(--text2); margin-top: 4px; text-transform: uppercase; letter-spacing: 0.05em; }
+
+  /* Controls */
+  .controls { display: flex; gap: 8px; margin-bottom: 1rem; flex-wrap: wrap; }
+  .controls input, .controls select {
+    font-family: 'IBM Plex Sans', sans-serif;
+    font-size: 13px;
+    background: var(--surface);
+    border: 0.5px solid var(--border);
+    border-radius: 8px;
+    padding: 8px 12px;
+    color: var(--text);
+    outline: none;
+    transition: border-color 0.15s;
+  }
+  .controls input { flex: 1; min-width: 200px; }
+  .controls input:focus, .controls select:focus { border-color: var(--green); }
+
+  /* Buttons */
+  .btn {
+    font-family: 'IBM Plex Sans', sans-serif;
+    font-size: 13px;
+    font-weight: 500;
+    padding: 8px 16px;
+    border-radius: 8px;
+    cursor: pointer;
+    border: 0.5px solid var(--border);
+    background: var(--surface);
+    color: var(--text);
+    transition: all 0.15s;
+    white-space: nowrap;
+  }
+  .btn:hover { border-color: var(--border-strong); }
+  .btn-primary { background: var(--green); color: #fff; border-color: var(--green); }
+  .btn-primary:hover { background: var(--green-dark); border-color: var(--green-dark); }
+  .btn-sm { font-size: 11px; padding: 5px 10px; }
+
+  /* Add form */
+  .add-form {
+    background: var(--surface);
+    border: 0.5px solid var(--green);
+    border-radius: 12px;
+    padding: 1.25rem;
+    margin-bottom: 1rem;
+    display: none;
+  }
+  .add-form.open { display: block; }
+  .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 10px; }
+  .form-grid .full { grid-column: 1 / -1; }
+  .field { display: flex; flex-direction: column; gap: 3px; }
+  .field label { font-size: 10px; color: var(--text2); text-transform: uppercase; letter-spacing: 0.05em; }
+  .field input, .field select, .field textarea {
+    font-family: 'IBM Plex Sans', sans-serif;
+    font-size: 13px;
+    background: var(--bg);
+    border: 0.5px solid var(--border);
+    border-radius: 7px;
+    padding: 7px 10px;
+    color: var(--text);
+    outline: none;
+    resize: vertical;
+  }
+  .field input:focus, .field select:focus, .field textarea:focus { border-color: var(--green); }
+  .form-actions { display: flex; gap: 8px; justify-content: flex-end; margin-top: 4px; }
+
+  /* Cards */
+  .prospect-list { display: flex; flex-direction: column; gap: 6px; }
+  .card {
+    background: var(--surface);
+    border: 0.5px solid var(--border);
+    border-radius: 12px;
+    padding: 1rem 1.25rem;
+    cursor: pointer;
+    transition: border-color 0.15s, box-shadow 0.15s;
+    position: relative;
+  }
+  .card:hover { border-color: var(--border-strong); }
+  .card.expanded { border-color: var(--green); }
+  .card-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; }
+  .card-left { flex: 1; min-width: 0; }
+  .card-company { font-size: 14px; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .card-contact { font-size: 12px; color: var(--text2); margin-top: 2px; }
+  .card-right { display: flex; flex-direction: column; align-items: flex-end; gap: 5px; flex-shrink: 0; }
+
+  /* Badges */
+  .badge { font-size: 10px; font-weight: 500; padding: 3px 9px; border-radius: 99px; letter-spacing: 0.02em; white-space: nowrap; }
+  .b-sequence { background: var(--blue-light); color: var(--blue-text); }
+  .b-positive { background: var(--green-light); color: var(--green-text); }
+  .b-meeting { background: var(--purple-light); color: var(--purple-text); }
+  .b-lost { background: var(--gray-light); color: var(--gray-text); }
+  .b-neutral { background: var(--amber-light); color: var(--amber-text); }
+
+  .due-tag { font-family: 'IBM Plex Mono', monospace; font-size: 10px; color: var(--text3); }
+  .due-tag.overdue { color: var(--red-text); font-weight: 500; }
+  .due-tag.soon { color: var(--amber-text); }
+
+  .card-next { font-size: 12px; color: var(--text2); margin-top: 8px; padding-top: 8px; border-top: 0.5px solid var(--border); line-height: 1.4; }
+  .card-next strong { color: var(--text); font-weight: 500; }
+
+  /* Expanded */
+  .expanded-body { display: none; margin-top: 12px; padding-top: 12px; border-top: 0.5px solid var(--border); }
+  .card.expanded .expanded-body { display: block; }
+  .detail-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px 16px; margin-bottom: 12px; }
+  .detail-label { font-size: 10px; color: var(--text2); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 2px; }
+  .detail-val { font-size: 13px; color: var(--text); }
+  .detail-val a { color: var(--green); text-decoration: none; }
+  .detail-val a:hover { text-decoration: underline; }
+
+  .notes-box { background: var(--bg); border-radius: 8px; padding: 10px 12px; font-size: 12px; color: var(--text2); line-height: 1.6; margin-bottom: 12px; }
+
+  .touch-dots { display: flex; gap: 4px; align-items: center; margin-top: 2px; }
+  .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--green); flex-shrink: 0; }
+  .dot.empty { background: transparent; border: 0.5px solid var(--border-strong); }
+
+  .inline-controls { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+  .inline-controls select, .inline-controls input[type="date"] {
+    font-family: 'IBM Plex Sans', sans-serif;
+    font-size: 12px;
+    background: var(--bg);
+    border: 0.5px solid var(--border);
+    border-radius: 7px;
+    padding: 5px 8px;
+    color: var(--text);
+    outline: none;
+  }
+  .inline-controls select:focus, .inline-controls input:focus { border-color: var(--green); }
+  .inline-controls textarea {
+    font-family: 'IBM Plex Sans', sans-serif;
+    font-size: 12px;
+    background: var(--bg);
+    border: 0.5px solid var(--border);
+    border-radius: 7px;
+    padding: 6px 8px;
+    color: var(--text);
+    outline: none;
+    resize: vertical;
+    width: 100%;
+  }
+  .inline-controls textarea:focus { border-color: var(--green); }
+
+  .section-label { font-size: 10px; color: var(--text2); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 6px; margin-top: 10px; }
+
+  .empty-state { text-align: center; padding: 3rem 1rem; color: var(--text2); font-size: 13px; }
+
+  /* Section dividers in list */
+  .section-divider { font-family: 'IBM Plex Mono', monospace; font-size: 10px; color: var(--text3); text-transform: uppercase; letter-spacing: 0.08em; padding: 0.5rem 0 0.25rem; margin-top: 0.5rem; border-top: 0.5px solid var(--border); }
+
+  @media (max-width: 600px) {
+    .stats { grid-template-columns: repeat(2, 1fr); }
+    .form-grid { grid-template-columns: 1fr; }
+    .form-grid .full { grid-column: 1; }
+    .detail-grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+<div id="gate">
+  <div id="gate-box">
+    <p>ClinicBucket / Pipeline</p>
+    <input type="password" id="pwInput" placeholder="Password" onkeydown="if(event.key==='Enter')checkPw()">
+    <button onclick="checkPw()">Enter</button>
+    <div class="err" id="pwErr">Incorrect password</div>
+  </div>
+</div>
+
+<div class="shell" id="app" style="display:none">
+
+  <div class="header">
+    <div class="logo">ClinicBucket <span>/ Pipeline</span></div>
+    <div class="header-right">
+      <button class="btn btn-sm" onclick="exportCSV()">Export CSV</button>
+      <button class="btn btn-primary" onclick="toggleAdd()">+ Add prospect</button>
+    </div>
+  </div>
+
+  <div class="stats" id="statsRow"></div>
+
+  <div class="controls">
+    <input type="text" id="search" placeholder="Search clinics, contacts, notes..." oninput="render()">
+    <select id="fstatus" onchange="render()">
+      <option value="">All statuses</option>
+      <option>In Sequence</option>
+      <option>Replied - Positive</option>
+      <option>Meeting Booked</option>
+      <option>Closed Lost</option>
+    </select>
+    <select id="fsort" onchange="render()">
+      <option value="due">Sort: due date</option>
+      <option value="company">Sort: A–Z</option>
+      <option value="status">Sort: status</option>
+    </select>
+  </div>
+
+  <div class="add-form" id="addForm">
+    <div class="form-grid">
+      <div class="field"><label>Company</label><input type="text" id="nCompany" placeholder="Clinic name"></div>
+      <div class="field"><label>Contact name</label><input type="text" id="nContact" placeholder="Full name"></div>
+      <div class="field"><label>Role</label><input type="text" id="nRole" placeholder="CEO, COO..."></div>
+      <div class="field"><label>Email</label><input type="text" id="nEmail" placeholder="email@clinic.com"></div>
+      <div class="field"><label>LinkedIn URL</label><input type="text" id="nLinkedIn" placeholder="https://linkedin.com/in/..."></div>
+      <div class="field"><label>Phone</label><input type="text" id="nPhone" placeholder="+44..."></div>
+      <div class="field"><label>Status</label>
+        <select id="nStatus">
+          <option>In Sequence</option>
+          <option>Replied - Positive</option>
+          <option>Meeting Booked</option>
+          <option>Closed Lost</option>
+        </select>
+      </div>
+      <div class="field"><label>Next action due</label><input type="date" id="nDue"></div>
+      <div class="field full"><label>Next action</label><input type="text" id="nNext" placeholder="What needs to happen?"></div>
+      <div class="field full"><label>Notes / intel</label><textarea id="nNotes" rows="2" placeholder="Context, angles, objections..."></textarea></div>
+    </div>
+    <div class="form-actions">
+      <button class="btn" onclick="toggleAdd()">Cancel</button>
+      <button class="btn btn-primary" onclick="addProspect()">Save prospect</button>
+    </div>
+  </div>
+
+  <div class="prospect-list" id="list"></div>
+</div>
+
+<script>
+const SEED = [
+  {company:"Medical Rehabilitation",contact:"Dr Andrew Bradford",role:"Sole Practitioner",email:"",phone:"03303 410969",linkedin:"https://www.linkedin.com/in/dr-andrew-bradford-68114718/",status:"Replied - Positive",next:"Waiting on reply from email",due:"2026-01-19",notes:"Emailed asking how I am. Replied a normal response. Waiting on response.",touches:3},
+  {company:"Cannabis Clinic Cardiff",contact:"Sam Ashton",role:"CEO & Co-Founder",email:"samashton@cannabiscliniccardiff.co.uk",phone:"44 7450 420 420",linkedin:"https://www.linkedin.com/in/sam-ashton-720a218a/",status:"Replied - Positive",next:"Waiting on reply from email",due:"2026-01-12",notes:"",touches:3},
+  {company:"The Vesey",contact:"Ben Royal",role:"Director",email:"ben.royal@thevesey.co.uk",phone:"44 790 379 1381",linkedin:"https://www.linkedin.com/in/ben-royal-33a263236/",status:"Replied - Positive",next:"Follow up if no reply",due:"2026-02-28",notes:"Retention not the issue — acquisition is. Doesn't like virtual consults. New thread: acquisition / Google Ads angle. Fresh subject line.",touches:3},
+  {company:"Medicann UK",contact:"Gary Whipp",role:"CEO",email:"gary@medicann.co.uk",phone:"44 (0)7999420420",linkedin:"https://www.linkedin.com/in/gary-whipp-4774541a/",status:"Meeting Booked",next:"Discovery call",due:"2026-01-20",notes:"Gary emailed asking for a prop Jan 12. Sent and no reply since.",touches:4},
+  {company:"Airmed (SHCC)",contact:"Pat Fegan",role:"CEO",email:"pat@shcc.co.uk",phone:"44 779 884 1234",linkedin:"https://www.linkedin.com/in/patfegan/",status:"Meeting Booked",next:"If no reply, move to nurture",due:"2026-02-28",notes:"Meeting proposed Jan 21. Pat didn't show. No reply on WhatsApp or phone since.",touches:3},
+  {company:"Dispensed",contact:"Tim Crow",role:"Head of Operations & People",email:"tim@dispensed.com.au",phone:"020 3892 1903",linkedin:"https://www.linkedin.com/in/tim-crow/",status:"In Sequence",next:"",due:"2026-01-19",notes:"",touches:2},
+  {company:"IPS Pharma / Integro",contact:"Neil Smith",role:"CEO",email:"neil.smith@avextra.com",phone:"0800 464 7051",linkedin:"https://www.linkedin.com/in/neil-smith-a4764371/",status:"In Sequence",next:"",due:"2026-01-12",notes:"",touches:2},
+  {company:"Chelsea Pharmacy Medical",contact:"Bhavin Patel",role:"CEO",email:"b.patel@cpmedicalclinic.com",phone:"020 7838 6180",linkedin:"https://www.linkedin.com/in/bhavin-patel-86b59825/",status:"In Sequence",next:"",due:"2026-01-19",notes:"",touches:3},
+  {company:"Anna Medicinals",contact:"Nick Pateras",role:"Head of Operations",email:"Nick.Pateras@annamedicinals",phone:"01727 647979",linkedin:"",status:"In Sequence",next:"",due:"2026-01-19",notes:"",touches:2},
+  {company:"Nottingham Road Clinic",contact:"Grant Roberts",role:"CEO",email:"grant.roberts@managedhealthcareservices.co.uk",phone:"01623 624137",linkedin:"https://www.linkedin.com/in/grant-roberts-41a28b1/",status:"In Sequence",next:"Follow up if no reply",due:"2026-02-28",notes:"New thread: 6-month renewal retention question.",touches:3},
+  {company:"Ghosh Medical",contact:"Arun Ghosh",role:"CEO",email:"arun@ghoshmedicalgroup.com",phone:"0333 200 3335",linkedin:"https://www.linkedin.com/in/arun-ghosh-69340923/",status:"In Sequence",next:"",due:"2026-01-19",notes:"",touches:3},
+  {company:"London Orthopaedic Clinic",contact:"Cristina Emberton",role:"COO",email:"cristina.emberton@londonorthopaedic.com",phone:"020 7186 1000",linkedin:"https://www.linkedin.com/in/cristina-emberton-78699ab6/",status:"In Sequence",next:"",due:"2026-01-19",notes:"",touches:3},
+  {company:"Maruleaf",contact:"Zachariah Edwards",role:"Director",email:"info@maruleafclinic.co.uk",phone:"07469 017192",linkedin:"https://www.linkedin.com/in/zachariah-edwards-b5a594364/",status:"In Sequence",next:"",due:"2026-01-19",notes:"",touches:3},
+  {company:"Zoto",contact:"Dean Gainsley",role:"Clinical Lead",email:"dgainsley@britannia.com",phone:"0207 101 8424",linkedin:"https://www.linkedin.com/in/deangainsley/",status:"In Sequence",next:"",due:"2026-01-12",notes:"Previously reached out to Dr Arun, now chasing Dean.",touches:1},
+  {company:"Marucanna",contact:"Mohammed Israr",role:"Owner",email:"",phone:"0121 537 2393",linkedin:"https://www.linkedin.com/in/mohammed-israr-4aba57200/",status:"In Sequence",next:"",due:"2026-01-19",notes:"",touches:3},
+  {company:"CB1 Medical",contact:"Anabel Sharma",role:"COO",email:"anabel@cb1medical.com",phone:"0116 273 1233",linkedin:"https://www.linkedin.com/in/anabel-sharma/",status:"In Sequence",next:"Follow up if no reply",due:"2026-02-28",notes:"New thread: referenced Medistack launch + plans to double patients in 2026.",touches:3},
+  {company:"Mamedica",contact:"Lia Reid",role:"Head of Clinic Operations",email:"lia@mamedica.com",phone:"0330 580 1170",linkedin:"https://www.linkedin.com/in/lia-reid-48a020222/",status:"In Sequence",next:"Follow up if no reply",due:"2026-02-28",notes:"New thread: referenced Casa Verde £4.5m investment + scaling.",touches:3},
+  {company:"Lyphe",contact:"Karen Sharp",role:"MD",email:"karen@lyphe.com",phone:"0204 538 2273",linkedin:"",status:"In Sequence",next:"",due:"2026-01-19",notes:"Email did not send for Nick.",touches:4},
+  {company:"Welford Clinic",contact:"Joshua Roberts",role:"CBO",email:"joshuaboydroberts@gmail.com",phone:"0203 376 6661",linkedin:"https://www.linkedin.com/in/joshua-roberts-24a71123/",status:"In Sequence",next:"",due:"2026-01-19",notes:"",touches:4},
+  {company:"Jorja Emerson Centre",contact:"Robin Emerson",role:"Founder",email:"robin.emerson001@gmail.com",phone:"0333 050 5088",linkedin:"https://www.linkedin.com/in/robin-emerson-56181761/",status:"In Sequence",next:"",due:"2026-01-19",notes:"",touches:4},
+  {company:"Phoenix Mental Health",contact:"Martine Stoffels",role:"Director",email:"martine.stoffels@phoenix-mhs.com",phone:"0370 162 0673",linkedin:"https://www.linkedin.com/in/dr-martine-stoffels-04839520/",status:"In Sequence",next:"",due:"2026-01-19",notes:"",touches:3},
+  {company:"Elios Clinics",contact:"Harmeet Singh Bharaj",role:"Director",email:"hsb@thearmourgroup.com",phone:"0121 405 1696",linkedin:"https://www.linkedin.com/in/harmeet-singh-bharaj/",status:"In Sequence",next:"Follow up if no reply",due:"2026-02-28",notes:"Re-engagement: free consult model retention economics. New thread: multi-service clinic, 28-day prescription cycle.",touches:4},
+  {company:"Medisonal Clinic",contact:"Hana Thalova Salussolia",role:"CEO",email:"hana@medisonalclinic.com",phone:"020 8016 3990",linkedin:"https://www.linkedin.com/in/hana-thalova-salussolia-ab0833b/",status:"In Sequence",next:"",due:"2026-01-19",notes:"",touches:4},
+  {company:"The Plug Medical Group",contact:"James Short",role:"Owner",email:"james@celadonpharma.co.uk",phone:"0207 096 5660",linkedin:"https://www.linkedin.com/in/james-short-809778211/",status:"In Sequence",next:"Follow up if no reply",due:"2026-02-28",notes:"Took Celadon private Aug 2025. Free consult model. New thread: Celadon pharmacy angle.",touches:3},
+  {company:"Borders Pain Clinic",contact:"Rob Forbes",role:"Founder",email:"info@borderspainclinic.co.uk",phone:"",linkedin:"https://www.linkedin.com/in/rob-forbes-72b30373/",status:"In Sequence",next:"Circle back mid-Feb",due:"2026-02-15",notes:"Lead with The Plug unit economics — free consults attract low-value patients, retention is how he flips it to margin.",touches:3},
+  {company:"London Cannabis Clinic",contact:"Mark Ali",role:"CEO & Medical Director",email:"mark@privateharleystreetclinic.com",phone:"020 7118 0250",linkedin:"https://www.linkedin.com/in/dr-mark-ali-harleystreetclinic/",status:"In Sequence",next:"",due:"2026-01-20",notes:"Head of umbrella org, might delegate down.",touches:2},
+  {company:"Cantourage UK",contact:"Josh Casson",role:"Operations Director",email:"josh@cantourageclinic.com",phone:"",linkedin:"https://www.linkedin.com/in/jpwcasson/",status:"Closed Lost",next:"",due:"",notes:"Not ICP, leave for now.",touches:2},
+  {company:"Resilience Medicine",contact:"Dr Dani Gordon",role:"Founder",email:"dani@resiliencemedicine.co.uk",phone:"",linkedin:"https://www.linkedin.com/in/drdanigordon/",status:"Closed Lost",next:"",due:"",notes:"Not ICP, leave for now.",touches:0},
+  {company:"MyAccess Clinics",contact:"Christopher Strauch",role:"CEO",email:"chris@montu.com.au",phone:"",linkedin:"https://www.linkedin.com/in/christopherstrauch/",status:"Closed Lost",next:"",due:"",notes:"Acquired by Montu. Do not contact.",touches:0},
+  {company:"LVL Health",contact:"Tony Samios",role:"CEO",email:"",phone:"",linkedin:"https://www.linkedin.com/in/tony-samios-92397011/",status:"Closed Lost",next:"",due:"",notes:"DNC.",touches:0},
+  {company:"Treat-It Clinic",contact:"Bede Ronzani",role:"CFO",email:"bede@easykind.com.au",phone:"",linkedin:"https://www.linkedin.com/in/bederonzani/",status:"Closed Lost",next:"",due:"",notes:"Acquired by EasyKind.",touches:0},
+  {company:"Leva / Zerenia / Khiron",contact:"Eric Bystrom",role:"CEO",email:"eric@levaclinic.com",phone:"",linkedin:"https://linkedin.com/in/eric-bystrom-0a3831",status:"Closed Lost",next:"Set Google Alert, revisit if recapitalized",due:"",notes:"IASO Ltd entered administration Oct 2024. Khiron parent micro-cap. High payment risk. If Bystrom moves to stable company, follow him.",touches:3},
+  {company:"Montu",contact:"Angus O'Connell",role:"Head of B2C Marketing",email:"angus.o@montu.com.au",phone:"",linkedin:"",status:"Closed Lost",next:"Reach out to Angus for warm intro to Veronica",due:"",notes:"30-min meeting. Angus said he'd connect to Veronica who heads UK marketing for Montu.",touches:1},
+  {company:"Via Clinic",contact:"Eileen Feeney",role:"CEO",email:"eileen.feeney@viaclinic.co.uk",phone:"",linkedin:"https://www.linkedin.com/in/eileen-feeney-6060716/",status:"Closed Lost",next:"",due:"",notes:"Only prescribes to certain patients. Not a cannabis clinic.",touches:3},
+];
+
+let prospects = JSON.parse(localStorage.getItem('cb_prospects') || 'null');
+if (!prospects) {
+  prospects = SEED.map((p, i) => ({ ...p, id: Date.now() + i }));
+  save();
+}
+
+let expanded = null;
+
+function save() { localStorage.setItem('cb_prospects', JSON.stringify(prospects)); }
+
+function toggleAdd() {
+  const f = document.getElementById('addForm');
+  f.classList.toggle('open');
+  if (f.classList.contains('open')) document.getElementById('nCompany').focus();
+}
+
+function addProspect() {
+  const company = document.getElementById('nCompany').value.trim();
+  if (!company) { document.getElementById('nCompany').focus(); return; }
+  prospects.unshift({
+    id: Date.now(),
+    company,
+    contact: document.getElementById('nContact').value.trim(),
+    role: document.getElementById('nRole').value.trim(),
+    email: document.getElementById('nEmail').value.trim(),
+    linkedin: document.getElementById('nLinkedIn').value.trim(),
+    phone: document.getElementById('nPhone').value.trim(),
+    status: document.getElementById('nStatus').value,
+    next: document.getElementById('nNext').value.trim(),
+    due: document.getElementById('nDue').value,
+    notes: document.getElementById('nNotes').value.trim(),
+    touches: 0
+  });
+  save();
+  ['nCompany','nContact','nRole','nEmail','nLinkedIn','nPhone','nNext','nDue','nNotes'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el.tagName === 'TEXTAREA' || el.type !== 'date') el.value = '';
+    else el.value = '';
+  });
+  document.getElementById('addForm').classList.remove('open');
+  render();
+}
+
+function badgeClass(s) {
+  if (s === 'In Sequence') return 'b-sequence';
+  if (s === 'Replied - Positive') return 'b-positive';
+  if (s === 'Meeting Booked') return 'b-meeting';
+  if (s === 'Closed Lost') return 'b-lost';
+  return 'b-neutral';
+}
+
+function dueSev(due) {
+  if (!due) return '';
+  const today = new Date(); today.setHours(0,0,0,0);
+  const diff = Math.round((new Date(due) - today) / 86400000);
+  if (diff < 0) return 'overdue';
+  if (diff <= 7) return 'soon';
+  return '';
+}
+
+function fmtDue(due) {
+  if (!due) return '';
+  return new Date(due).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: '2-digit' });
+}
+
+function toggleExpand(id) {
+  expanded = expanded === id ? null : id;
+  render();
+}
+
+function updateField(id, field, val) {
+  const p = prospects.find(x => x.id === id);
+  if (p) { p[field] = val; save(); }
+}
+
+function getFiltered() {
+  const q = document.getElementById('search').value.toLowerCase();
+  const fs = document.getElementById('fstatus').value;
+  const sort = document.getElementById('fsort').value;
+
+  let list = prospects.filter(p => {
+    if (fs && p.status !== fs) return false;
+    if (q) {
+      const blob = [p.company, p.contact, p.role, p.notes, p.next, p.email].join(' ').toLowerCase();
+      if (!blob.includes(q)) return false;
+    }
+    return true;
+  });
+
+  if (sort === 'due') {
+    list.sort((a, b) => {
+      if (!a.due && !b.due) return 0;
+      if (!a.due) return 1;
+      if (!b.due) return -1;
+      return new Date(a.due) - new Date(b.due);
+    });
+  } else if (sort === 'company') {
+    list.sort((a, b) => a.company.localeCompare(b.company));
+  } else if (sort === 'status') {
+    const order = ['Meeting Booked','Replied - Positive','In Sequence','Closed Lost'];
+    list.sort((a, b) => order.indexOf(a.status) - order.indexOf(b.status));
+  }
+
+  return list;
+}
+
+function dots(n) {
+  const total = Math.max(n, 5);
+  return Array.from({length: total}, (_, i) =>
+    `<div class="dot${i < n ? '' : ' empty'}"></div>`
+  ).join('');
+}
+
+function render() {
+  const filtered = getFiltered();
+  const active = prospects.filter(p => p.status !== 'Closed Lost');
+  const warm = prospects.filter(p => ['Replied - Positive','Meeting Booked'].includes(p.status));
+  const overdue = prospects.filter(p => dueSev(p.due) === 'overdue' && p.status !== 'Closed Lost');
+
+  document.getElementById('statsRow').innerHTML = `
+    <div class="stat-card"><div class="stat-n">${active.length}</div><div class="stat-l">Active</div></div>
+    <div class="stat-card"><div class="stat-n">${warm.length}</div><div class="stat-l">Warm</div></div>
+    <div class="stat-card"><div class="stat-n">${overdue.length}</div><div class="stat-l" style="color:${overdue.length>0?'var(--red-text)':'inherit'}">Overdue</div></div>
+    <div class="stat-card"><div class="stat-n">${prospects.length}</div><div class="stat-l">Total</div></div>
+  `;
+
+  if (!filtered.length) {
+    document.getElementById('list').innerHTML = '<div class="empty-state">No prospects match.</div>';
+    return;
+  }
+
+  document.getElementById('list').innerHTML = filtered.map(p => {
+    const sev = dueSev(p.due);
+    const isExp = expanded === p.id;
+
+    return `
+    <div class="card${isExp ? ' expanded' : ''}" id="card-${p.id}" onclick="toggleExpand(${p.id})">
+      <div class="card-top">
+        <div class="card-left">
+          <div class="card-company">${p.company}</div>
+          <div class="card-contact">${p.contact}${p.role ? ' · ' + p.role : ''}</div>
+        </div>
+        <div class="card-right">
+          <span class="badge ${badgeClass(p.status)}">${p.status}</span>
+          ${p.due ? `<span class="due-tag ${sev}">${sev === 'overdue' ? '⚠ ' : ''}${fmtDue(p.due)}</span>` : ''}
+        </div>
+      </div>
+      ${p.next ? `<div class="card-next"><strong>Next:</strong> ${p.next}</div>` : ''}
+
+      <div class="expanded-body">
+        <div class="detail-grid">
+          ${p.email ? `<div><div class="detail-label">Email</div><div class="detail-val"><a href="mailto:${p.email}">${p.email}</a></div></div>` : ''}
+          ${p.phone ? `<div><div class="detail-label">Phone</div><div class="detail-val">${p.phone}</div></div>` : ''}
+          ${p.linkedin ? `<div><div class="detail-label">LinkedIn</div><div class="detail-val"><a href="${p.linkedin}" target="_blank">View profile ↗</a></div></div>` : ''}
+          <div><div class="detail-label">Touches</div><div class="touch-dots">${dots(p.touches || 0)}</div></div>
+        </div>
+
+        ${p.notes ? `<div class="notes-box">${p.notes}</div>` : ''}
+
+        <div class="section-label">Update</div>
+        <div class="inline-controls" onclick="event.stopPropagation()">
+          <select onchange="updateField(${p.id},'status',this.value);render()">
+            ${['In Sequence','Replied - Positive','Meeting Booked','Closed Lost'].map(s =>
+              `<option${p.status===s?' selected':''}>${s}</option>`
+            ).join('')}
+          </select>
+          <input type="date" value="${p.due||''}" onchange="updateField(${p.id},'due',this.value);render()" title="Next action due">
+        </div>
+        <div style="margin-top:8px" onclick="event.stopPropagation()">
+          <textarea rows="2" placeholder="Next action / notes..." onchange="updateField(${p.id},'next',this.value)">${p.next||''}</textarea>
+        </div>
+        <div style="margin-top:8px;display:flex;gap:8px" onclick="event.stopPropagation()">
+          <button class="btn btn-sm" onclick="incrementTouch(${p.id})">+ Touch (${p.touches||0})</button>
+          <button class="btn btn-sm" style="color:var(--red-text);border-color:var(--red-text)" onclick="deleteProspect(${p.id})">Remove</button>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function incrementTouch(id) {
+  const p = prospects.find(x => x.id === id);
+  if (p) { p.touches = (p.touches || 0) + 1; save(); render(); }
+}
+
+function deleteProspect(id) {
+  if (!confirm('Remove this prospect?')) return;
+  prospects = prospects.filter(x => x.id !== id);
+  expanded = null;
+  save();
+  render();
+}
+
+function exportCSV() {
+  const headers = ['Company','Contact','Role','Email','Phone','LinkedIn','Status','Next Action','Due','Touches','Notes'];
+  const rows = prospects.map(p => [
+    p.company, p.contact, p.role, p.email, p.phone, p.linkedin,
+    p.status, p.next, p.due, p.touches, p.notes
+  ].map(v => `"${(v||'').toString().replace(/"/g,'""')}"`).join(','));
+  const csv = [headers.join(','), ...rows].join('\n');
+  const a = document.createElement('a');
+  a.href = 'data:text/csv;charset=utf-8,' + encodeURIComponent(csv);
+  a.download = 'clinicbucket-pipeline.csv';
+  a.click();
+}
+
+function checkPw() {
+  const val = document.getElementById('pwInput').value;
+  if (val === 'Claude3!Claude3!') {
+    document.getElementById('gate').style.display = 'none';
+    document.getElementById('app').style.display = 'block';
+    sessionStorage.setItem('cb_auth', '1');
+  } else {
+    document.getElementById('pwErr').style.display = 'block';
+    document.getElementById('pwInput').value = '';
+    document.getElementById('pwInput').focus();
+  }
+}
+
+if (sessionStorage.getItem('cb_auth') === '1') {
+  document.getElementById('gate').style.display = 'none';
+  document.getElementById('app').style.display = 'block';
+}
+
+render();
+</script>
+</body>
+</html>
