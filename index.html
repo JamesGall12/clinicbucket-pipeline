@@ -183,9 +183,24 @@
 
   .notes-box { background: var(--bg); border-radius: 8px; padding: 10px 12px; font-size: 12px; color: var(--text2); line-height: 1.6; margin-bottom: 12px; }
 
-  .touch-dots { display: flex; gap: 4px; align-items: center; margin-top: 2px; }
-  .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--green); flex-shrink: 0; }
-  .dot.empty { background: transparent; border: 0.5px solid var(--border-strong); }
+  .comms-summary { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 4px; }
+  .comm-chip { font-size: 11px; padding: 2px 8px; border-radius: 99px; font-family: 'IBM Plex Mono', monospace; }
+  .comm-call { background: var(--purple-light); color: var(--purple-text); }
+  .comm-email { background: var(--blue-light); color: var(--blue-text); }
+  .comm-linkedin { background: var(--green-light); color: var(--green-text); }
+  .comm-whatsapp { background: var(--amber-light); color: var(--amber-text); }
+  .comms-log { margin-top: 10px; display: flex; flex-direction: column; gap: 5px; }
+  .comm-entry { display: flex; align-items: flex-start; gap: 8px; font-size: 12px; padding: 7px 10px; background: var(--bg); border-radius: 7px; }
+  .comm-entry-type { font-size: 10px; font-weight: 500; padding: 2px 7px; border-radius: 99px; flex-shrink: 0; margin-top: 1px; }
+  .comm-entry-body { flex: 1; color: var(--text2); line-height: 1.4; }
+  .comm-entry-date { font-family: 'IBM Plex Mono', monospace; font-size: 10px; color: var(--text3); flex-shrink: 0; margin-top: 2px; }
+  .comm-entry-del { font-size: 10px; color: var(--text3); cursor: pointer; flex-shrink: 0; padding: 2px 4px; }
+  .comm-entry-del:hover { color: var(--red-text); }
+  .log-form { display: flex; gap: 6px; flex-wrap: wrap; align-items: flex-start; margin-top: 8px; }
+  .log-form select, .log-form input { font-family: 'IBM Plex Sans', sans-serif; font-size: 12px; background: var(--bg); border: 0.5px solid var(--border); border-radius: 7px; padding: 6px 8px; color: var(--text); outline: none; }
+  .log-form select:focus, .log-form input:focus { border-color: var(--green); }
+  .log-form input[type="text"] { flex: 1; min-width: 140px; }
+  .log-form input[type="date"] { width: 130px; }
 
   .inline-controls { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
   .inline-controls select, .inline-controls input[type="date"] {
@@ -439,11 +454,43 @@ function getFiltered() {
   return list;
 }
 
-function dots(n) {
-  const total = Math.max(n, 5);
-  return Array.from({length: total}, (_, i) =>
-    `<div class="dot${i < n ? '' : ' empty'}"></div>`
+function commsCounts(p) {
+  const c = p.comms || [];
+  const counts = {};
+  c.forEach(x => { counts[x.type] = (counts[x.type]||0) + 1; });
+  return counts;
+}
+
+function commsChips(p) {
+  const counts = commsCounts(p);
+  return Object.entries(counts).map(([type, n]) =>
+    `<span class="comm-chip comm-${type.toLowerCase()}">${type} ×${n}</span>`
   ).join('');
+}
+
+function commsSummary(p) {
+  const counts = commsCounts(p);
+  const total = Object.values(counts).reduce((a,b)=>a+b,0);
+  if (!total) return '';
+  return `<span style="font-weight:400;color:var(--text3);font-size:10px;margin-left:4px">(${total} total)</span>`;
+}
+
+function addComm(id) {
+  const p = prospects.find(x => x.id === id);
+  if (!p) return;
+  const type = document.getElementById(`ct-${id}`).value;
+  const note = document.getElementById(`cn-${id}`).value.trim();
+  const date = document.getElementById(`cd-${id}`).value;
+  if (!p.comms) p.comms = [];
+  p.comms.push({ type, note, date });
+  document.getElementById(`cn-${id}`).value = '';
+  save();
+  render();
+}
+
+function deleteComm(pid, idx) {
+  const p = prospects.find(x => x.id === pid);
+  if (p && p.comms) { p.comms.splice(idx, 1); save(); render(); }
 }
 
 function render() {
@@ -474,6 +521,7 @@ function render() {
         <div class="card-left">
           <div class="card-company">${p.company}</div>
           <div class="card-contact">${p.contact}${p.role ? ' · ' + p.role : ''}</div>
+          ${(p.comms||[]).length ? `<div class="comms-summary">${commsChips(p)}</div>` : ''}
         </div>
         <div class="card-right">
           <span class="badge ${badgeClass(p.status)}">${p.status}</span>
@@ -487,12 +535,12 @@ function render() {
           ${p.email ? `<div><div class="detail-label">Email</div><div class="detail-val"><a href="mailto:${p.email}">${p.email}</a></div></div>` : ''}
           ${p.phone ? `<div><div class="detail-label">Phone</div><div class="detail-val">${p.phone}</div></div>` : ''}
           ${p.linkedin ? `<div><div class="detail-label">LinkedIn</div><div class="detail-val"><a href="${p.linkedin}" target="_blank">View profile ↗</a></div></div>` : ''}
-          <div><div class="detail-label">Touches</div><div class="touch-dots">${dots(p.touches || 0)}</div></div>
+          ${p.notes ? `<div style="grid-column:1/-1"><div class="detail-label">Notes</div><div class="notes-box" style="margin:0">${p.notes}</div></div>` : ''}
         </div>
 
         ${p.notes ? `<div class="notes-box">${p.notes}</div>` : ''}
 
-        <div class="section-label">Update</div>
+        <div class="section-label">Update status</div>
         <div class="inline-controls" onclick="event.stopPropagation()">
           <select onchange="updateField(${p.id},'status',this.value);render()">
             ${['In Sequence','Replied - Positive','Meeting Booked','Closed Lost'].map(s =>
@@ -502,20 +550,39 @@ function render() {
           <input type="date" value="${p.due||''}" onchange="updateField(${p.id},'due',this.value);render()" title="Next action due">
         </div>
         <div style="margin-top:8px" onclick="event.stopPropagation()">
-          <textarea rows="2" placeholder="Next action / notes..." onchange="updateField(${p.id},'next',this.value)">${p.next||''}</textarea>
+          <textarea rows="2" placeholder="Next action..." onchange="updateField(${p.id},'next',this.value)">${p.next||''}</textarea>
         </div>
-        <div style="margin-top:8px;display:flex;gap:8px" onclick="event.stopPropagation()">
-          <button class="btn btn-sm" onclick="incrementTouch(${p.id})">+ Touch (${p.touches||0})</button>
-          <button class="btn btn-sm" style="color:var(--red-text);border-color:var(--red-text)" onclick="deleteProspect(${p.id})">Remove</button>
+
+        <div class="section-label" style="margin-top:14px">Comms log ${commsSummary(p)}</div>
+        <div class="comms-log" onclick="event.stopPropagation()">
+          ${(p.comms||[]).slice().reverse().map((c,ri) => {
+            const i = (p.comms.length - 1) - ri;
+            return `<div class="comm-entry">
+              <span class="comm-entry-type comm-${c.type.toLowerCase()}">${c.type}</span>
+              <div class="comm-entry-body">${c.note || '—'}</div>
+              <span class="comm-entry-date">${c.date}</span>
+              <span class="comm-entry-del" onclick="deleteComm(${p.id},${i})">✕</span>
+            </div>`;
+          }).join('') || '<div style="font-size:12px;color:var(--text3);padding:4px 0">No comms logged yet.</div>'}
+        </div>
+        <div class="log-form" onclick="event.stopPropagation()">
+          <select id="ct-${p.id}">
+            <option>Email</option>
+            <option>Call</option>
+            <option>LinkedIn</option>
+            <option>WhatsApp</option>
+          </select>
+          <input type="text" id="cn-${p.id}" placeholder="What happened / outcome...">
+          <input type="date" id="cd-${p.id}" value="${new Date().toISOString().split('T')[0]}">
+          <button class="btn btn-sm btn-primary" onclick="addComm(${p.id})">Log</button>
+        </div>
+
+        <div style="margin-top:12px" onclick="event.stopPropagation()">
+          <button class="btn btn-sm" style="color:var(--red-text);border-color:var(--red-text)" onclick="deleteProspect(${p.id})">Remove prospect</button>
         </div>
       </div>
     </div>`;
   }).join('');
-}
-
-function incrementTouch(id) {
-  const p = prospects.find(x => x.id === id);
-  if (p) { p.touches = (p.touches || 0) + 1; save(); render(); }
 }
 
 function deleteProspect(id) {
